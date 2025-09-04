@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>🎉 Happy Birthday Chinguu!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --accent: #ff6bcb;
+      --accent-2: #7c4dff;
+      --text: #0f1020;
+      --bg-start: #fff5fb;
+      --bg-end: #f0f7ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top left, var(--bg-start), var(--bg-end));
+      overflow-x:hidden;
+    }
+    h1{
+      font-size: clamp(28px, 6vw, 48px);
+      text-align:center;
+      margin:20px 0 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    p{
+      text-align:center;
+      font-size: 18px;
+      color:#444;
+      max-width:600px;
+      margin: 0 auto 20px;
+      white-space:pre-line;
+    }
+    .btns{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:20px;
+    }
+    button{
+      padding:12px 20px;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      cursor:pointer;
+      font-weight:bold;
+      color:white;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+    .balloons{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+    .balloon{
+      --x:50%;
+      position:absolute;
+      left:var(--x);
+      bottom:-20%;
+      width:50px; aspect-ratio:3/4;
+      border-radius:50% 50% 45% 45%;
+      background: var(--c,#ff6bcb);
+      animation: float var(--t,10s) linear infinite;
+      transform:translateX(-50%);
+    }
+    .balloon::after{
+      content:"";
+      position:absolute;
+      left:50%; bottom:-14px;
+      width:2px; height:80px;
+      background:#ccc;
+      transform:translateX(-50%);
+    }
+    @keyframes float{
+      0%{transform:translate(-50%,0)}
+      50%{transform:translate(-48%,-40vh)}
+      100%{transform:translate(-52%,-80vh)}
+    }
+    canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+  </style>
+</head>
+<body>
+  <h1>Happy Birthday, Chinguu! 🎂</h1>
+  <p id="msg"></p>
+  <div class="btns">
+    <button id="surpriseBtn">🎉 Surprise!</button>
+  </div>
+
+  <div class="balloons" id="balloons"></div>
+  <canvas id="confetti"></canvas>
+
+  <script>
+    // Message typing
+    const message = `Dear Chinguu ✨\n\nWishing you laughter, cake, and all your favorite things!\nYou make the world brighter just by being you.\nHave the most magical day 💖`;
+    const msgEl = document.getElementById("msg");
+    let i=0;
+    function type(){
+      if(i<message.length){
+        msgEl.textContent += message[i];
+        i++;
+        setTimeout(type,40);
+      }
+    }
+    type();
+
+    // Balloons
+    const colors=["#ff6bcb","#7c4dff","#ffd166","#06d6a0","#4cc9f0","#ff8fab"];
+    const balloons=document.getElementById("balloons");
+    function spawnBalloon(){
+      const b=document.createElement("div");
+      b.className="balloon";
+      b.style.setProperty("--x",Math.random()*100+"%");
+      b.style.setProperty("--t",(8+Math.random()*5)+"s");
+      b.style.setProperty("--c",colors[Math.floor(Math.random()*colors.length)]);
+      balloons.appendChild(b);
+      setTimeout(()=>b.remove(),15000);
+    }
+    setInterval(spawnBalloon,1000);
+    for(let j=0;j<6;j++) setTimeout(spawnBalloon, j*400);
+
+    // Confetti
+    const canvas=document.getElementById("confetti");
+    const ctx=canvas.getContext("2d");
+    function resize(){
+      canvas.width=innerWidth;
+      canvas.height=innerHeight;
+    }
+    window.addEventListener("resize",resize);
+    resize();
+    let confetti=[];
+    function burst(){
+      for(let i=0;i<150;i++){
+        confetti.push({
+          x:innerWidth/2, y:innerHeight/2,
+          r:2+Math.random()*6,
+          dx:(Math.random()-.5)*6,
+          dy:(Math.random()-.5)*6,
+          color:colors[Math.floor(Math.random()*colors.length)],
+          life:100+Math.random()*50
+        });
+      }
+    }
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      confetti.forEach(c=>{
+        ctx.beginPath();
+        ctx.fillStyle=c.color;
+        ctx.fillRect(c.x,c.y,c.r,c.r);
+        c.x+=c.dx; c.y+=c.dy+1; c.dy+=0.05; c.life--;
+      });
+      confetti=confetti.filter(c=>c.life>0);
+      requestAnimationFrame(animate);
+    }
+    animate();
+    document.getElementById("surpriseBtn").addEventListener("click",burst);
+  </script>
+</body>
+</html>
